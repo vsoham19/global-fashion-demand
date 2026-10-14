@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>{% include '_head.html' %}</head>
+<body>
+{% from '_nav.html' import navbar %}
+{{ navbar('models') }}
+
+<main class="container-main py-6 flex flex-col gap-5">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+      <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span><span class="text-base text-slate-900 font-semibold">PySpark MLlib Pipeline</span></div>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 font-mono text-xs text-slate-600"><span class="material-symbols-outlined text-blue-600 text-[14px]">terminal</span>spark.ml.regression.RandomForestRegressor</div>
+      <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">Run #RF-2025-V4</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5" id="model-cards"></div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+    <h3 class="text-base font-semibold text-slate-900 mb-1">Per-Country Evaluation (Random Forest)</h3>
+    <p class="text-xs text-slate-400 mb-4">Forecast accuracy varies by geographic segment</p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm" id="country-eval">
+        <thead><tr class="border-b border-slate-100">
+          <th class="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Country</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">RMSE</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">MAE</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">R&sup2;</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Test N</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+    <h3 class="text-base font-semibold text-slate-900 mb-1">Per-Category Evaluation (Random Forest)</h3>
+    <p class="text-xs text-slate-400 mb-4">Forecast accuracy by product category</p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm" id="cat-eval">
+        <thead><tr class="border-b border-slate-100">
+          <th class="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Category</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">RMSE</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">MAE</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">R&sup2;</th>
+          <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Test N</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">RF Feature Importance</h3>
+      <div id="rf-fi" class="flex flex-col gap-2.5"></div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">GBT Feature Importance</h3>
+      <div id="gbt-fi" class="flex flex-col gap-2.5"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+async function load(){
+  const metrics=await fetch('/api/model_metrics').then(r=>r.json());
+  const fi=await fetch('/api/feature_importances').then(r=>r.json());
+  const seg=await fetch('/api/segment_metrics').then(r=>r.json());
+
+  const models=[
+    {key:'rf',name:'Random Forest',tag:'PRODUCTION CHAMPION',bg:'bg-blue-50',desc:'30 trees \u2022 maxDepth: 8 \u2022 3-fold CrossValidated',ver:'v3.2',champ:true},
+    {key:'gbt',name:'Gradient Boosted Trees',tag:'CANDIDATE',bg:'bg-slate-50',desc:'20 iterations \u2022 maxDepth: 4 \u2022 2-fold CrossValidated',ver:'v2.1'},
+    {key:'lr',name:'Linear Regression',tag:'BASELINE',bg:'bg-slate-50',desc:'regParam: 0.1 \u2022 maxIter: 50',ver:'v1.0'}
+  ];
+
+  const mc=document.getElementById('model-cards');
+  models.forEach(m=>{
+    const d=metrics[m.key]||{};
+    const borderStyle=m.champ?'style="box-shadow:0 0 0 2px #2563EB,0 4px 12px rgba(37,99,235,0.15)"':'';
+    mc.innerHTML+=`<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" ${borderStyle}>
+      <div class="${m.bg} px-5 py-3 flex items-center justify-between border-b border-slate-100">
+        <span class="text-xs font-bold text-slate-700 tracking-wide flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]" ${m.champ?'style="font-variation-settings:\'FILL\' 1;"':''}>${m.champ?'star':'science'}</span>${m.tag}</span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${m.champ?'bg-blue-600 text-white':'bg-slate-200 text-slate-500'}">${m.ver}</span>
+      </div>
+      <div class="p-5 flex flex-col gap-4">
+        <div><h3 class="text-lg font-bold text-slate-900">${m.name}</h3><p class="text-xs text-slate-400 mt-1">${m.desc}</p></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-slate-50 rounded-xl p-3"><span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">RMSE</span><div class="text-xl font-bold text-slate-900 tabular-nums">${(d.rmse||0).toFixed(2)}</div></div>
+          <div class="bg-slate-50 rounded-xl p-3"><span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">MAE</span><div class="text-xl font-bold text-slate-900 tabular-nums">${(d.mae||0).toFixed(2)}</div></div>
+          <div class="bg-slate-50 rounded-xl p-3"><span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">R-squared</span><div class="text-xl font-bold ${m.champ?'text-blue-600':'text-slate-900'} tabular-nums">${(d.r2||0).toFixed(4)}</div></div>
+          <div class="bg-slate-50 rounded-xl p-3"><span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">sMAPE</span><div class="text-xl font-bold text-slate-900 tabular-nums">${(d.smape||0).toFixed(1)}%</div></div>
+        </div>
+        <div class="text-xs text-slate-400 pt-2 border-t border-slate-100">Test samples: <span class="font-semibold text-slate-600">${(d.n||0).toLocaleString()}</span></div>
+      </div>
+    </div>`;
+  });
+
+  const cm=seg.country||{};const ct=document.querySelector('#country-eval tbody');
+  Object.entries(cm).sort((a,b)=>b[1].r2-a[1].r2).forEach(([k,v])=>{
+    const rc=v.r2>0.82?'text-emerald-600 font-bold':v.r2>0.78?'text-amber-600 font-medium':'text-red-500';
+    ct.innerHTML+=`<tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors"><td class="py-3 px-4 text-slate-900 font-medium">${k}</td><td class="py-3 px-4 text-right tabular-nums text-slate-900">${(v.rmse||0).toFixed(2)}</td><td class="py-3 px-4 text-right tabular-nums text-slate-900">${(v.mae||0).toFixed(2)}</td><td class="py-3 px-4 text-right tabular-nums ${rc}">${(v.r2||0).toFixed(4)}</td><td class="py-3 px-4 text-right tabular-nums text-slate-400">${(v.n||0).toLocaleString()}</td></tr>`;
+  });
+
+  const catm=seg.category||{};const cat=document.querySelector('#cat-eval tbody');
+  Object.entries(catm).sort((a,b)=>b[1].r2-a[1].r2).forEach(([k,v])=>{
+    const rc=v.r2>0.82?'text-emerald-600 font-bold':v.r2>0.78?'text-amber-600 font-medium':'text-red-500';
+    cat.innerHTML+=`<tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors"><td class="py-3 px-4 text-slate-900 font-medium">${k}</td><td class="py-3 px-4 text-right tabular-nums text-slate-900">${(v.rmse||0).toFixed(2)}</td><td class="py-3 px-4 text-right tabular-nums text-slate-900">${(v.mae||0).toFixed(2)}</td><td class="py-3 px-4 text-right tabular-nums ${rc}">${(v.r2||0).toFixed(4)}</td><td class="py-3 px-4 text-right tabular-nums text-slate-400">${(v.n||0).toLocaleString()}</td></tr>`;
+  });
+
+  ['rf','gbt'].forEach(model=>{
+    const el=document.getElementById(model+'-fi');const data=fi[model]||[];
+    const max=data.length>0?data[0][1]:1;
+    data.slice(0,10).forEach(([name,val])=>{
+      el.innerHTML+=`<div class="flex items-center gap-3"><span class="w-32 text-xs text-slate-500 font-mono shrink-0">${name}</span><div class="flex-1 h-5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full ${model==='rf'?'bg-gradient-to-r from-blue-600 to-blue-400':'bg-gradient-to-r from-teal-600 to-teal-400'} rounded-full" style="width:${(val/max*100).toFixed(0)}%"></div></div><span class="w-12 text-xs text-slate-900 text-right tabular-nums font-semibold shrink-0">${(val*100).toFixed(1)}%</span></div>`;
+    });
+  });
+}
+load();
+</script>
+</body>
+</html>

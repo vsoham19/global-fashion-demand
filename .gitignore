@@ -1,0 +1,29 @@
+# Data files (regenerate via download_data.py + main_pipeline.py)
+data/
+dataset.zip
+
+# Pipeline outputs (regenerate via main_pipeline.py + visualize.py)
+outputs/
+
+# Spark temporary shuffle files
+spark_tmp/
+
+# Large design source files (UI already adapted into templates/)
+stitch_fashiondemand_ai_analytics_dashboard/
+stitch_fashiondemand_ai_analytics_dashboard.zip
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+
+# LaTeX build artifacts (keep .tex, ignore build files)
+report_latex/*.aux
+report_latex/*.log
+report_latex/*.out
+report_latex/*.toc
+report_latex/*.synctex.gz
+
+# OS files
+Thumbs.db
+.DS_Store

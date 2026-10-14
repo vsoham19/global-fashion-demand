@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>{% include '_head.html' %}</head>
+<body>
+{% from '_nav.html' import navbar %}
+{{ navbar('inventory') }}
+
+<main class="container-main py-6 flex flex-col gap-5">
+  <!-- Risk Summary -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="bg-red-50/60 rounded-2xl p-5 shadow-sm border border-red-100 hover:shadow-md transition-shadow">
+      <div class="flex items-start justify-between">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-red-500 uppercase tracking-wider font-semibold">Immediate Hazard</span>
+          <span class="text-3xl text-red-600 font-bold tracking-tight" id="inv-stockout">--</span>
+          <p class="text-sm text-slate-500">Critical / Immediate Reorder</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-red-500 text-[28px]" style="font-variation-settings:'FILL' 1;">warning</span></div>
+      </div>
+      <div class="mt-4 flex items-center justify-between">
+        <span class="px-2.5 py-1 rounded-full bg-red-100 text-red-600 text-xs font-semibold" id="inv-stockout-pct">--</span>
+        <span class="text-xs text-slate-400">Lead time: 7 days</span>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+      <div class="flex items-start justify-between">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Capital Trapped</span>
+          <span class="text-3xl text-slate-900 font-bold tracking-tight" id="inv-overstock">--</span>
+          <p class="text-sm text-slate-500">Excess Holding / Margin Drain</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-teal-500 text-[28px]">verified_user</span></div>
+      </div>
+      <div class="mt-4 flex items-center justify-between">
+        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold" id="inv-overstock-pct">--</span>
+        <span class="text-xs text-slate-400">Holding cost: $0</span>
+      </div>
+    </div>
+    <div class="bg-emerald-50/60 rounded-2xl p-5 shadow-sm border border-emerald-100 hover:shadow-md transition-shadow">
+      <div class="flex items-start justify-between">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-emerald-600 uppercase tracking-wider font-semibold">Buffer Status</span>
+          <span class="text-3xl text-emerald-600 font-bold tracking-tight" id="inv-healthy">--</span>
+          <p class="text-sm text-slate-500">Balanced Buffer Stock</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-emerald-500 text-[28px]" style="font-variation-settings:'FILL' 1;">check_circle</span></div>
+      </div>
+      <div class="mt-4 flex items-center justify-between">
+        <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-600 text-xs font-semibold" id="inv-healthy-pct">--</span>
+        <span class="text-xs text-emerald-500">Optimal (14-28d)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toolbar -->
+  <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+    <div class="flex flex-wrap items-center gap-2 flex-1">
+      <div class="relative min-w-[260px] max-w-sm flex-1">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+        <input class="w-full h-10 pl-10 pr-4 bg-slate-50 text-slate-900 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-200" id="inv-search" placeholder="Search by Store, Category..." type="text"/>
+      </div>
+      <div class="flex items-center gap-1.5 overflow-x-auto" id="inv-filters">
+        <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-white" data-filter="all" type="button">All</button>
+        <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors" data-filter="CRITICAL" type="button">Critical</button>
+        <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors" data-filter="HIGH" type="button">High</button>
+        <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors" data-filter="STOCKOUT_RISK" type="button">Stockout</button>
+        <button class="filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-amber-50 hover:text-amber-600 transition-colors" data-filter="OVERSTOCK_RISK" type="button">Overstock</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <div class="px-3 py-2 rounded-xl bg-blue-50 text-blue-700 text-xs font-semibold">Total Orders: <span id="inv-total-value">$--</span></div>
+    </div>
+  </section>
+
+  <!-- Table -->
+  <section class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
+      <h3 class="text-base font-semibold text-slate-900">Inventory Recommendations</h3>
+      <span class="text-xs text-slate-400" id="inv-count">Loading...</span>
+    </div>
+    <div class="overflow-x-auto max-h-[550px] overflow-y-auto">
+      <table class="w-full text-sm" id="inv-table">
+        <thead class="sticky top-0 bg-slate-50 z-10">
+          <tr class="border-b border-slate-200">
+            <th class="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Priority</th>
+            <th class="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Store</th>
+            <th class="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Category</th>
+            <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Forecast 7d</th>
+            <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Safety</th>
+            <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Required</th>
+            <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Current</th>
+            <th class="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Coverage</th>
+            <th class="text-right py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Order Qty</th>
+            <th class="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-wider">Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+let allData=[];let currentFilter='all';let searchTerm='';
+function fmtM(v){if(v>=1e6)return'$'+(v/1e6).toFixed(2)+'M';if(v>=1e3)return'$'+(v/1e3).toFixed(0)+'K';return'$'+(v||0).toFixed(0)}
+function severityBadge(sev){const m={CRITICAL:'bg-red-500 text-white',HIGH:'bg-orange-500 text-white',MEDIUM:'bg-amber-400 text-black',LOW:'bg-amber-100 text-amber-800',NONE:'bg-slate-100 text-slate-500'};return`<span class="inline-flex px-2.5 py-1 rounded-full text-[11px] font-bold ${m[sev]||m.NONE}">${sev}</span>`}
+function coverageBar(days){let c='bg-emerald-500';if(days<5)c='bg-red-500';else if(days<15)c='bg-amber-400';const pct=Math.min(days/30*100,100).toFixed(0);return`<div class="flex items-center gap-2"><div class="w-20 h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full ${c} rounded-full transition-all" style="width:${pct}%"></div></div><span class="text-xs tabular-nums ${days<5?'text-red-500 font-bold':'text-slate-500'}">${days.toFixed(1)}d</span></div>`}
+function renderTable(){let d=allData;if(currentFilter==='CRITICAL'||currentFilter==='HIGH')d=d.filter(r=>r.risk_severity===currentFilter);else if(currentFilter==='STOCKOUT_RISK'||currentFilter==='OVERSTOCK_RISK')d=d.filter(r=>r.risk_status===currentFilter);if(searchTerm){const s=searchTerm.toLowerCase();d=d.filter(r=>(r.city+' '+r.category+' '+r.country).toLowerCase().includes(s))}const tb=document.querySelector('#inv-table tbody');tb.innerHTML=d.map(r=>`<tr class="border-b border-slate-50 hover:bg-blue-50/30 transition-colors"><td class="py-3 px-4">${severityBadge(r.risk_severity)}</td><td class="py-3 px-4"><div class="font-semibold text-slate-900">${r.city}</div><div class="text-xs text-slate-400">${r.country}</div></td><td class="py-3 px-4 text-slate-700">${r.category}</td><td class="py-3 px-4 text-right tabular-nums text-slate-900">${Math.round(r.forecast_7day_demand||0)}</td><td class="py-3 px-4 text-right tabular-nums text-slate-500">${r.safety_stock||0}</td><td class="py-3 px-4 text-right tabular-nums text-slate-900 font-semibold">${r.required_inventory||0}</td><td class="py-3 px-4 text-right tabular-nums text-slate-500">${r.simulated_current_stock||0}</td><td class="py-3 px-4">${coverageBar(r.coverage_days||0)}</td><td class="py-3 px-4 text-right tabular-nums ${r.recommended_order_qty>0?'text-blue-600 font-bold':'text-slate-400'}">${r.recommended_order_qty>0?r.recommended_order_qty:'-'}</td><td class="py-3 px-4 text-xs ${r.recommended_order_qty>0?'text-red-500 font-medium':'text-slate-400'}">${r.recommended_action||'No action'}</td></tr>`).join('');document.getElementById('inv-count').textContent=`Showing ${d.length} of ${allData.length} segments`}
+async function load(){const sum=await fetch('/api/inventory_summary').then(r=>r.json());document.getElementById('inv-stockout').textContent=sum.stockout_risk+' Segments';document.getElementById('inv-overstock').textContent=sum.overstock_risk+' Segments';document.getElementById('inv-healthy').textContent=sum.healthy+' Segments';document.getElementById('inv-stockout-pct').textContent=((sum.stockout_risk/sum.total_segments)*100).toFixed(1)+'% of portfolio';document.getElementById('inv-overstock-pct').textContent=((sum.overstock_risk/sum.total_segments)*100).toFixed(1)+'% Optimal';document.getElementById('inv-healthy-pct').textContent=((sum.healthy/sum.total_segments)*100).toFixed(1)+'% Safe';document.getElementById('inv-total-value').textContent=fmtM(sum.total_order_value);allData=await fetch('/api/inventory_recommendations').then(r=>r.json());renderTable();document.getElementById('inv-search').addEventListener('input',e=>{searchTerm=e.target.value;renderTable()});document.querySelectorAll('.filter-chip').forEach(btn=>{btn.addEventListener('click',()=>{currentFilter=btn.dataset.filter;document.querySelectorAll('.filter-chip').forEach(b=>{b.className='filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors'});btn.className='filter-chip px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-white';renderTable()})})}
+load();
+</script>
+</body>
+</html>

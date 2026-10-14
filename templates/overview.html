@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>{% include '_head.html' %}</head>
+<body>
+{% from '_nav.html' import navbar %}
+{{ navbar('overview') }}
+
+<main class="container-main py-6 flex flex-col gap-6">
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600 text-[20px]">payments</span></div>
+          <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Revenue</span>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">+12.4%</span>
+      </div>
+      <div class="text-3xl font-bold text-slate-900 tracking-tight" id="kpi-revenue">$--</div>
+      <span class="text-sm text-slate-400 mt-1">Global aggregate gross</span>
+    </div>
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center"><span class="material-symbols-outlined text-indigo-600 text-[20px]">inventory_2</span></div>
+          <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Units Sold</span>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">+8.1% YoY</span>
+      </div>
+      <div class="text-3xl font-bold text-slate-900 tracking-tight" id="kpi-units">--</div>
+      <span class="text-sm text-slate-400 mt-1">Across 3 categories</span>
+    </div>
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center"><span class="material-symbols-outlined text-teal-600 text-[20px]">storefront</span></div>
+          <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Active Stores</span>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium"><span id="kpi-countries">--</span> Countries</span>
+      </div>
+      <div class="text-3xl font-bold text-slate-900 tracking-tight" id="kpi-stores">--</div>
+      <span class="text-sm text-slate-400 mt-1">Global retail footprint</span>
+    </div>
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center"><span class="material-symbols-outlined text-red-500 text-[20px]">warning</span></div>
+          <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Risk Segments</span>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Action</span>
+      </div>
+      <div class="text-3xl font-bold text-red-500 tracking-tight" id="kpi-risk">--</div>
+      <span class="text-sm text-slate-400 mt-1">Stockout vulnerability</span>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-semibold text-slate-900">Monthly Revenue Trend</h3>
+        <span class="text-xs text-slate-400">Jan 2023 - Mar 2025</span>
+      </div>
+      <div class="h-80 flex items-center justify-center"><img src="/charts/02_monthly_trend.png" class="max-w-full max-h-full object-contain" alt="Monthly Trend"/></div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">Category Split</h3>
+      <div class="h-80 flex items-center justify-center"><img src="/charts/03_category_demand.png" class="max-w-full max-h-full object-contain" alt="Category"/></div>
+    </div>
+  </div>
+
+  <!-- Country + Country-Category -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">Revenue by Country</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm" id="tbl-country">
+          <thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Country</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Revenue</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Transactions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">Country x Category</h3>
+      <div class="h-72 flex items-center justify-center"><img src="/charts/11_country_category.png" class="max-w-full max-h-full object-contain" alt="Country Category"/></div>
+    </div>
+  </div>
+
+  <!-- Seasonal + Discount -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">Seasonal Pattern</h3>
+      <div class="h-72 flex items-center justify-center"><img src="/charts/09_seasonal.png" class="max-w-full max-h-full object-contain" alt="Seasonal"/></div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">Discount vs Full Price</h3>
+      <div class="h-72 flex items-center justify-center"><img src="/charts/06_discount_analysis.png" class="max-w-full max-h-full object-contain" alt="Discount"/></div>
+    </div>
+  </div>
+
+  <!-- Top Stores -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+    <h3 class="text-base font-semibold text-slate-900 mb-4">Top 10 Stores by Revenue</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm" id="tbl-stores">
+        <thead><tr class="border-b border-slate-100">
+          <th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Store</th>
+          <th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Country</th>
+          <th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Revenue</th>
+          <th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Units</th>
+          <th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Customers</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+function fmtM(v){if(v>=1e9)return'$'+(v/1e9).toFixed(1)+'B';if(v>=1e6)return'$'+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'$'+(v/1e3).toFixed(0)+'K';return'$'+v.toFixed(0)}
+function fmtN(v){if(v>=1e6)return(v/1e6).toFixed(2)+'M';if(v>=1e3)return(v/1e3).toFixed(1)+'K';return v.toLocaleString()}
+
+async function load(){
+  const s=await fetch('/api/summary').then(r=>r.json());
+  document.getElementById('kpi-revenue').textContent=fmtM(s.total_revenue);
+  document.getElementById('kpi-units').textContent=fmtN(s.total_units);
+  document.getElementById('kpi-stores').textContent=s.active_stores;
+  document.getElementById('kpi-countries').textContent=s.countries;
+  document.getElementById('kpi-risk').textContent=s.risk_segments;
+
+  const countries=await fetch('/api/country_demand').then(r=>r.json());
+  const tb=document.querySelector('#tbl-country tbody');
+  countries.sort((a,b)=>b.total_revenue-a.total_revenue).forEach(r=>{
+    tb.innerHTML+=`<tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors"><td class="py-2.5 text-slate-900 font-medium">${r.country}</td><td class="py-2.5 text-right text-slate-900 tabular-nums font-semibold">${fmtM(r.total_revenue)}</td><td class="py-2.5 text-right text-slate-500 tabular-nums">${fmtN(r.transaction_count)}</td></tr>`;
+  });
+
+  const stores=await fetch('/api/top_stores').then(r=>r.json());
+  const ts=document.querySelector('#tbl-stores tbody');
+  stores.slice(0,10).forEach(r=>{
+    ts.innerHTML+=`<tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors"><td class="py-2.5 text-slate-900 font-medium">${r.city}</td><td class="py-2.5 text-slate-500">${r.country}</td><td class="py-2.5 text-right text-slate-900 tabular-nums">${fmtM(r.total_revenue)}</td><td class="py-2.5 text-right text-slate-500 tabular-nums">${fmtN(r.total_units)}</td><td class="py-2.5 text-right text-slate-500 tabular-nums">${fmtN(r.unique_customers)}</td></tr>`;
+  });
+}
+load();
+</script>
+</body>
+</html>

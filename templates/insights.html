@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>{% include '_head.html' %}</head>
+<body>
+{% from '_nav.html' import navbar %}
+{{ navbar('insights') }}
+
+<div class="bg-white border-b border-slate-200 shadow-sm">
+  <div class="container-main py-3 flex items-center gap-6 overflow-x-auto">
+    <button class="tab-btn relative pb-2.5 pt-1 text-blue-600 flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap" data-tab="geo" type="button"><span class="material-symbols-outlined text-[18px]">public</span>Geographic<span class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full"></span></button>
+    <button class="tab-btn relative pb-2.5 pt-1 text-slate-400 hover:text-slate-700 flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap transition-colors" data-tab="seasonal" type="button"><span class="material-symbols-outlined text-[18px]">query_stats</span>Seasonal</button>
+    <button class="tab-btn relative pb-2.5 pt-1 text-slate-400 hover:text-slate-700 flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap transition-colors" data-tab="discount" type="button"><span class="material-symbols-outlined text-[18px]">sell</span>Discount</button>
+    <button class="tab-btn relative pb-2.5 pt-1 text-slate-400 hover:text-slate-700 flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap transition-colors" data-tab="customer" type="button"><span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>Customer</button>
+  </div>
+</div>
+
+<main class="container-main py-6 flex flex-col gap-5">
+  <!-- GEO -->
+  <div class="tab-content" id="tab-geo">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-5">
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100"><span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">APAC Revenue</span><div class="text-3xl text-slate-900 font-bold mt-2" id="geo-apac">$--</div><span class="text-xs text-slate-400">China dominant</span></div>
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100"><span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Americas</span><div class="text-3xl text-slate-900 font-bold mt-2" id="geo-americas">$--</div><span class="text-xs text-slate-400">US primary</span></div>
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100"><span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">EMEA</span><div class="text-3xl text-slate-900 font-bold mt-2" id="geo-emea">$--</div><span class="text-xs text-slate-400">5 European markets</span></div>
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100"><span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Total Stores</span><div class="text-3xl text-slate-900 font-bold mt-2">35</div><span class="text-xs text-slate-400">7 countries</span></div>
+    </div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Revenue by Country</h3><div class="overflow-x-auto"><table class="w-full text-sm" id="geo-table"><thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Country</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Revenue</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Avg Line</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Transactions</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Country x Category</h3><div class="h-72 flex items-center justify-center"><img src="/charts/11_country_category.png" class="max-w-full max-h-full object-contain" alt=""/></div></div>
+    </div>
+  </div>
+
+  <!-- SEASONAL -->
+  <div class="tab-content hidden" id="tab-seasonal">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Seasonal Demand Pattern</h3><div class="h-80 flex items-center justify-center"><img src="/charts/09_seasonal.png" class="max-w-full max-h-full object-contain" alt=""/></div></div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Monthly Units</h3><div class="overflow-x-auto"><table class="w-full text-sm" id="seasonal-table"><thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Month</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Units</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Revenue</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Weekday & Hourly</h3><div class="h-64 flex items-center justify-center"><img src="/charts/05_weekday_hourly.png" class="max-w-full max-h-full object-contain" alt=""/></div></div>
+    </div>
+  </div>
+
+  <!-- DISCOUNT -->
+  <div class="tab-content hidden" id="tab-discount">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Discount Impact by Category</h3><div class="h-80 flex items-center justify-center"><img src="/charts/07_discount_impact.png" class="max-w-full max-h-full object-contain" alt=""/></div></div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Full Price vs Discounted</h3><div class="overflow-x-auto"><table class="w-full text-sm" id="discount-table"><thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Type</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Units</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Revenue</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Avg Value</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Price Distribution</h3><div class="overflow-x-auto"><table class="w-full text-sm" id="price-table"><thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Range</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Transactions</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Avg Qty</th></tr></thead><tbody></tbody></table></div></div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER -->
+  <div class="tab-content hidden" id="tab-customer">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Revenue Per Customer by Country</h3><div class="overflow-x-auto"><table class="w-full text-sm" id="customer-table"><thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Country</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Customers</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Rev/Customer</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Units/Customer</th></tr></thead><tbody></tbody></table></div></div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Top Sub-Categories</h3><div class="overflow-x-auto"><table class="w-full text-sm" id="subcat-table"><thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Sub-Category</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Revenue</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Units</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><h3 class="text-base font-semibold text-slate-900 mb-4">Payment Methods</h3><div class="overflow-x-auto"><table class="w-full text-sm" id="payment-table"><thead><tr class="border-b border-slate-100"><th class="text-left py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Method</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Transactions</th><th class="text-right py-2.5 text-slate-400 font-medium text-xs uppercase tracking-wider">Revenue</th></tr></thead><tbody></tbody></table></div></div>
+    </div>
+  </div>
+</main>
+
+<script>
+function fmtM(v){if(v>=1e9)return'$'+(v/1e9).toFixed(2)+'B';if(v>=1e6)return'$'+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'$'+(v/1e3).toFixed(0)+'K';return'$'+(v||0).toFixed(0)}
+function fmtN(v){if(v>=1e6)return(v/1e6).toFixed(2)+'M';if(v>=1e3)return(v/1e3).toFixed(1)+'K';return(v||0).toLocaleString()}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>{b.className='tab-btn relative pb-2.5 pt-1 text-slate-400 hover:text-slate-700 flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap transition-colors'});
+    btn.className='tab-btn relative pb-2.5 pt-1 text-blue-600 flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap';
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));
+    document.getElementById('tab-'+btn.dataset.tab).classList.remove('hidden');
+  });
+});
+
+async function load(){
+  const countries=await fetch('/api/country_demand').then(r=>r.json());
+  countries.sort((a,b)=>b.total_revenue-a.total_revenue);
+  const apac=countries.filter(c=>c.country==='\u4e2d\u56fd').reduce((s,c)=>s+c.total_revenue,0);
+  const am=countries.filter(c=>c.country==='United States').reduce((s,c)=>s+c.total_revenue,0);
+  const em=countries.filter(c=>!['\u4e2d\u56fd','United States'].includes(c.country)).reduce((s,c)=>s+c.total_revenue,0);
+  document.getElementById('geo-apac').textContent=fmtM(apac);
+  document.getElementById('geo-americas').textContent=fmtM(am);
+  document.getElementById('geo-emea').textContent=fmtM(em);
+  const gt=document.querySelector('#geo-table tbody');
+  countries.forEach(r=>{gt.innerHTML+=`<tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors"><td class="py-2.5 text-slate-900 font-medium">${r.country}</td><td class="py-2.5 text-right tabular-nums text-slate-900 font-semibold">${fmtM(r.total_revenue)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">$${(r.avg_line_total||0).toFixed(2)}</td><td class="py-2.5 text-right tabular-nums text-slate-400">${fmtN(r.transaction_count)}</td></tr>`});
+
+  const seasonal=await fetch('/api/seasonal').then(r=>r.json());
+  const mn=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const st=document.querySelector('#seasonal-table tbody');
+  seasonal.forEach(r=>{const peak=r.month===12;st.innerHTML+=`<tr class="border-b border-slate-50 ${peak?'bg-blue-50/50 font-semibold':''}"><td class="py-2.5 text-slate-900">${mn[r.month]||r.month}</td><td class="py-2.5 text-right tabular-nums text-slate-900">${fmtN(r.total_units)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">${fmtM(r.total_revenue)}</td></tr>`});
+
+  const disc=await fetch('/api/discount_analysis').then(r=>r.json());
+  const dt=document.querySelector('#discount-table tbody');
+  disc.forEach(r=>{dt.innerHTML+=`<tr class="border-b border-slate-50"><td class="py-2.5 text-slate-900 font-medium">${r.has_discount}</td><td class="py-2.5 text-right tabular-nums text-slate-900">${fmtN(r.total_units)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">${fmtM(r.total_revenue)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">$${(r.avg_line_total||0).toFixed(2)}</td></tr>`});
+
+  const price=await fetch('/api/price_distribution').then(r=>r.json());
+  const pt=document.querySelector('#price-table tbody');
+  price.forEach(r=>{pt.innerHTML+=`<tr class="border-b border-slate-50"><td class="py-2.5 text-slate-900 font-medium">$${r.price_bin}</td><td class="py-2.5 text-right tabular-nums text-slate-900">${fmtN(r.transaction_count)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">${(r.avg_quantity||0).toFixed(1)}</td></tr>`});
+
+  const cust=await fetch('/api/revenue_per_customer').then(r=>r.json());
+  cust.sort((a,b)=>b.revenue_per_customer-a.revenue_per_customer);
+  const ct=document.querySelector('#customer-table tbody');
+  cust.forEach(r=>{ct.innerHTML+=`<tr class="border-b border-slate-50"><td class="py-2.5 text-slate-900 font-medium">${r.country}</td><td class="py-2.5 text-right tabular-nums text-slate-900">${fmtN(r.unique_customers)}</td><td class="py-2.5 text-right tabular-nums text-blue-600 font-bold">$${(r.revenue_per_customer||0).toFixed(0)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">${(r.units_per_customer||0).toFixed(1)}</td></tr>`});
+
+  const subcat=await fetch('/api/subcategory_demand').then(r=>r.json());
+  subcat.sort((a,b)=>b.total_revenue-a.total_revenue);
+  const sbt=document.querySelector('#subcat-table tbody');
+  subcat.slice(0,10).forEach(r=>{sbt.innerHTML+=`<tr class="border-b border-slate-50"><td class="py-2.5 text-slate-900 font-medium">${r.sub_category}</td><td class="py-2.5 text-right tabular-nums text-slate-900">${fmtM(r.total_revenue)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">${fmtN(r.total_units)}</td></tr>`});
+
+  const pay=await fetch('/api/payment_methods').then(r=>r.json());
+  const pt2=document.querySelector('#payment-table tbody');
+  pay.forEach(r=>{pt2.innerHTML+=`<tr class="border-b border-slate-50"><td class="py-2.5 text-slate-900 font-medium">${r.payment_method}</td><td class="py-2.5 text-right tabular-nums text-slate-900">${fmtN(r.transaction_count)}</td><td class="py-2.5 text-right tabular-nums text-slate-500">${fmtM(r.total_revenue)}</td></tr>`});
+}
+load();
+</script>
+</body>
+</html>

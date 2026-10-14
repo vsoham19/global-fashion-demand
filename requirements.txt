@@ -1,0 +1,5 @@
+pyspark==3.5.5
+matplotlib
+pandas
+seaborn
+flask
